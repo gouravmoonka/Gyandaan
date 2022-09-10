@@ -19,19 +19,16 @@ router.post("/addcourse", async (req, res) => {
 
 router.post("/courses", async (req, res) => {
   try {
-    console.log("k");
     const topic = req.body.topic;
     Course.find({ topics: topic }, function (err, data) {
       if (err) {
         console.log(err);
         return res.send(500, "Something Went wrong with Retrieving data");
       } else {
-        console.log(data);
         res.json(data);
       }
     });
   } catch (err) {
-    console.log("k1");
     res.status(404).json(err);
   }
 });
