@@ -115,4 +115,6 @@ router.get("/studentprofile", authorize, async (req, res) => {
   }
 });
 
+//module.exports is used for exposing the functons present in this particular module to be used anywhere else
+//mkaes node miodules available externally
 module.exports = router;
