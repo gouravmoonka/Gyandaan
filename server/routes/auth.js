@@ -7,10 +7,12 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 router.use(cookieParser());
 
+//authorize function 
 const authorize = (req, res, next) => {
   const token = req.cookies.token;
 
   if (!token) {
+    //status code 404 is shown when something is not found
     return res.status(404).json("Token needed");
     next();
   } else {
@@ -26,15 +28,23 @@ const authorize = (req, res, next) => {
   }
 };
 
+//a post method for registration or signup
 router.post("/register", async (req, res) => {
   try {
     if (!req.body.name || !req.body.email || !req.body.password) {
+      //422:syntax is correct but can't be processed
       return res.status(422).json({ error: "All fields are required!" });
     }
     const userexist = await Student.findOne({ email: req.body.email });
     if (userexist) {
+      //401:no credentials or invalid credentials
       return res.status(401).json({ error: "Email Already Registered" });
     }
+    
+    //to encrypt the password use genSalt and hash function of bcrypt dependency
+    //first generate a salt and using that hash the password
+    //now create a newStudent object and using the info present in req body
+    //save that new object in Student
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(req.body.password, salt);
     const newStudent = await new Student({
@@ -44,8 +54,10 @@ router.post("/register", async (req, res) => {
       password: hashed,
     });
     const student = await newStudent.save();
+    //200:OK,success,http response code
     res.status(200).json(student);
   } catch (err) {
+    //in javascript there is only 1 catch block
     console.log(err);
   }
 });
@@ -54,6 +66,7 @@ router.post("/login", async (req, res) => {
   try {
     const student = await Student.findOne({ email: req.body.email });
 
+    //403:credential is there but not authorized
     if (!student) res.status(403).json("User not found");
     const validPassword = await bcrypt.compare(
       req.body.password,
@@ -64,6 +77,7 @@ router.post("/login", async (req, res) => {
     const { password, ...others } = student._doc;
 
     const email = others.email;
+    //creating a token using jwt.sign function and passing email and secret
     const token = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET);
 
     res.cookie("token", token, {
