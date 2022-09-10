@@ -22,6 +22,8 @@ router.post("/verification", async (req, res) => {
   const crypto = require("crypto");
 
   const shasum = crypto.createHmac("sha256", secret);
+  //stringify function of json is used to convert js obj to json format
+  //and parse funtion is used to convert json format to js object again
   shasum.update(JSON.stringify(req.body));
   const digest = shasum.digest("hex");
 
