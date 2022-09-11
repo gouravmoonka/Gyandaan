@@ -4,6 +4,7 @@ const io = require("socket.io")(8900, {
   },
 });
 
+//object array for storing the current users
 let users = [];
 
 const addUser = (userId, socketId) => {
@@ -37,6 +38,7 @@ io.on("connection", (socket) => {
       text,
     });
   });
+  
   //send notification
   socket.on("sendNotification", ({ senderName, receiverId, type }) => {
     const receiver = getUser(receiverId);
