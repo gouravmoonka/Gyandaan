@@ -14,14 +14,12 @@ const authorize = (req, res, next) => {
   if (!token) {
     //status code 404 is shown when something is not found
     return res.status(404).json("Token needed");
-    next();
   } else {
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
       if (err) {
         return res.json({ msg: "Failed" });
       } else {
         req.email = decoded.email;
-        console.log(req.email);
         return next();
       }
     });
